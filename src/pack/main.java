@@ -8,11 +8,12 @@ public class main {
 	static ArrayList<PrintWriter> out = new ArrayList<PrintWriter>();
 	static String status = "";
 	static String[] tokens = new String[200];
+	static String date = "3";
 	boolean loop = true;
 	public static void main(String[] args){
 		new main().run();//start
 	}
-	static synchronized void cat(String a, int b){//broadcast's message
+	static synchronized void masterOutput(String a){//broadcast's message
 		/*for(int i = 0; i < tokens.length; i++ ){
 			if(tokens[i] != null) status = status + tokens[i]; 
 		}*/
@@ -23,6 +24,7 @@ public class main {
 		}
 	}
 	public void run(){// accepts new clients  
+		System.out.println("Server booting version "+ date);
 		int i = 0;
 		ServerSocket mySocket = null;
 		try{mySocket = new ServerSocket(1234);}catch(Exception e){e.printStackTrace();}
@@ -57,14 +59,21 @@ class Client implements Runnable{
 	@Override
 	public void run() {
 		boolean loop = true;
+		try{
+		String input = in.readLine();
+		System.out.println(input);
+		if (input.equals(main.date)){System.out.println("Authentification granted");}
+		else{loop = false; System.out.println("Error authenticating");}
+		}catch (Exception death){loop = false; System.out.println("Error authenticating");}
 		while(loop){
 			try{
 				String input = in.readLine();
-				if(input.contains("ERROR")){in.close(); out.close(); 
+				if(input.contains("ERROR")){in.close(); out.close(); //deleat or fix this
 				System.out.println("player" + tag + "disconected");
 				}
-				//out.println(main.cat(input, tag));
+				//out.println(main.masterOutput(input, tag));
 				//out.flush();
+				main.masterOutput(input);
 				Thread.sleep(50);
 				}catch(Exception e){System.out.println("we have a comunication error");
 				try{in.close();
@@ -79,8 +88,8 @@ class Client implements Runnable{
 		tag = c;
 		in = a;
 		//out = b;
-		out.print('2');
-		out.flush();
+		//out.print('3');
+		//out.flush();
 	}
 	
 }
