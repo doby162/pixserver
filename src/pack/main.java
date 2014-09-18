@@ -2,21 +2,25 @@ package pack;
 
 import java.io.*;
 import java.net.*;
+import java.util.ArrayList;
 
 public class main {
+	static ArrayList<PrintWriter> out = new ArrayList<PrintWriter>();
 	static String status = "";
 	static String[] tokens = new String[200];
 	boolean loop = true;
 	public static void main(String[] args){
 		new main().run();//start
 	}
-	static synchronized String cat(String a, int b){//broadcast's message
-		tokens[b] = a;
-		status = "";
-		for(int i = 0; i < tokens.length; i++ ){
+	static synchronized void cat(String a, int b){//broadcast's message
+		/*for(int i = 0; i < tokens.length; i++ ){
 			if(tokens[i] != null) status = status + tokens[i]; 
+		}*/
+		//return status;
+		for(PrintWriter writ: out){
+			writ.println(a);
+			writ.flush();
 		}
-		return status;
 	}
 	public void run(){// accepts new clients  
 		int i = 0;
@@ -32,7 +36,8 @@ public class main {
 				inputBuffer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 				outputBuffer = new PrintWriter(clientSocket.getOutputStream());
 			}catch(Exception e){System.out.println("Error connecting"); e.printStackTrace();}
-		Thread newClient = new Thread(new Client(inputBuffer,outputBuffer, i));
+		Thread newClient = new Thread(new Client(inputBuffer,i));
+		out.add(outputBuffer);
 		i++;
 		System.out.println("Player number " + new Integer(i).toString() + " has been added.");
 		newClient.start();
@@ -58,8 +63,8 @@ class Client implements Runnable{
 				if(input.contains("ERROR")){in.close(); out.close(); 
 				System.out.println("player" + tag + "disconected");
 				}
-				out.println(main.cat(input, tag));
-				out.flush();
+				//out.println(main.cat(input, tag));
+				//out.flush();
 				Thread.sleep(50);
 				}catch(Exception e){System.out.println("we have a comunication error");
 				try{in.close();
@@ -70,10 +75,10 @@ class Client implements Runnable{
 		
 	}
 	
-	public Client(BufferedReader a, PrintWriter b, int c){
+	public Client(BufferedReader a, int c){
 		tag = c;
 		in = a;
-		out = b;
+		//out = b;
 		out.print('2');
 		out.flush();
 	}
