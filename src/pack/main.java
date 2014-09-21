@@ -10,7 +10,9 @@ public class main {
 	static String[] tokens = new String[200];
 	static String date = "3";
 	boolean loop = true;
+	static int verbos = 1;
 	public static void main(String[] args){
+		try{verbos = new Integer(args[0]).intValue();}catch(Exception noInput){}
 		new main().run();//start
 	}
 	static synchronized void masterOutput(String a){//broadcast's message
@@ -18,9 +20,11 @@ public class main {
 			if(tokens[i] != null) status = status + tokens[i]; 
 		}*/
 		//return status;
+		if(verbos > 1) System.out.println("message sending");
 		for(PrintWriter writ: out){
 			writ.println(a);
 			writ.flush();
+			if(verbos > 1) System.out.println("message sent");
 		}
 	}
 	public void run(){// accepts new clients  
@@ -38,10 +42,12 @@ public class main {
 				inputBuffer = new BufferedReader(new InputStreamReader(clientSocket.getInputStream()));
 				outputBuffer = new PrintWriter(clientSocket.getOutputStream());
 			}catch(Exception e){System.out.println("Error connecting"); e.printStackTrace();}
-		Thread newClient = new Thread(new Client(inputBuffer,i));
+		Thread newClient = new Thread(new Client(inputBuffer,i, outputBuffer));
 		out.add(outputBuffer);
 		i++;
 		System.out.println("Player number " + new Integer(i).toString() + " has been added.");
+		//outputBuffer.println("bubba");
+		//outputBuffer.flush();
 		newClient.start();
 		}
 	}
@@ -68,6 +74,7 @@ class Client implements Runnable{
 		while(loop){
 			try{
 				String input = in.readLine();
+				if(main.verbos > 1)System.out.println(input + "<--message");
 				if(input.contains("ERROR")){in.close(); out.close(); //deleat or fix this
 				System.out.println("player" + tag + "disconected");
 				}
@@ -79,17 +86,18 @@ class Client implements Runnable{
 				try{in.close();
 				out.close();}catch(Exception a){}
 				main.tokens[tag] = null;
-				System.out.println("thread closed"); loop = false;}
-		}
+				System.out.println("thread closed"); loop = false; out.close();}
+		} 
 		
 	}
 	
-	public Client(BufferedReader a, int c){
+	public Client(BufferedReader a, int c, PrintWriter b){
 		tag = c;
 		in = a;
-		//out = b;
+		out = b;
 		//out.print('3');
 		//out.flush();
 	}
 	
 }
+//TODO figure out how to drop old connections nicely
