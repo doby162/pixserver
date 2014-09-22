@@ -8,7 +8,7 @@ public class main {
 	static ArrayList<PrintWriter> out = new ArrayList<PrintWriter>();
 	static String status = "";
 	static String[] tokens = new String[200];
-	static String date = "3";
+	static String date = "4";
 	boolean loop = true;
 	static int verbos = 1;
 	public static void main(String[] args){
@@ -69,7 +69,10 @@ class Client implements Runnable{
 		String input = in.readLine();
 		System.out.println(input);
 		if (input.equals(main.date)){System.out.println("Authentification granted");}
-		else{loop = false; System.out.println("Error authenticating");}
+		else{loop = false; main.out.remove(out); in.close(); out.close();
+		System.out.println("Error authenticating");}
+		out.println("date");
+		out.flush();
 		}catch (Exception death){loop = false; System.out.println("Error authenticating");}
 		while(loop){
 			try{
@@ -81,10 +84,12 @@ class Client implements Runnable{
 				//out.println(main.masterOutput(input, tag));
 				//out.flush();
 				main.masterOutput(input);
-				Thread.sleep(50);
+				Thread.sleep(5);
 				}catch(Exception e){System.out.println("we have a comunication error");
 				try{in.close();
-				out.close();}catch(Exception a){}
+				out.close();
+				main.out.remove(out);
+				}catch(Exception a){}
 				main.tokens[tag] = null;
 				System.out.println("thread closed"); loop = false; out.close();}
 		} 
