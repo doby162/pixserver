@@ -6,6 +6,7 @@ import java.util.ArrayList;
 
 public class main {
 	static ArrayList<PrintWriter> out = new ArrayList<PrintWriter>();
+	static String IDS = "";
 	static String status = "";
 	static String[] tokens = new String[200];
 	static String date = "4";
@@ -74,9 +75,23 @@ class Client implements Runnable{
 		out.println("date");
 		out.flush();
 		}catch (Exception death){loop = false; System.out.println("Error authenticating");}
+		String input = null;
+		
+		String q = main.IDS.concat("\n");
+		System.out.println(q);
+		out.println(q);
+		out.flush();
+		try {
+			input = in.readLine();
+			String[] tokens = input.split("~");
+			ID = tokens[1];
+		} catch (IOException e1) {}
+		
+		main.IDS = main.IDS.concat(ID);
+		
 		while(loop){
 			try{
-				String input = in.readLine();
+				input = in.readLine();
 				if(main.verbos > 1)System.out.println(input + "<--message");
 				if(input.contains("ERROR")){in.close(); out.close(); //deleat or fix this
 				System.out.println("player" + tag + "disconected");
@@ -91,7 +106,7 @@ class Client implements Runnable{
 				main.out.remove(out);
 				}catch(Exception a){}
 				main.tokens[tag] = null;
-				System.out.println("thread closed"); loop = false; out.close();}
+				System.out.println("thread closed"); loop = false; out.close(); main.IDS = new String(main.IDS.replace(ID, ""));}
 		} 
 		
 	}
