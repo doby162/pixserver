@@ -9,7 +9,7 @@ public class main {
 	static String IDS = "";
 	static String status = "";
 	static String[] tokens = new String[200];
-	static String date = "4";
+	static String date = "5";
 	boolean loop = true;
 	static int verbos = 1;
 	public static void main(String[] args){
@@ -72,7 +72,7 @@ class Client implements Runnable{
 		if (input.equals(main.date)){System.out.println("Authentification granted");}
 		else{loop = false; main.out.remove(out); in.close(); out.close();
 		System.out.println("Error authenticating");}
-		out.println("date");
+		out.println(main.date);
 		out.flush();
 		}catch (Exception death){loop = false; System.out.println("Error authenticating");}
 		String input = null;
@@ -120,4 +120,3 @@ class Client implements Runnable{
 	}
 	
 }
-//TODO figure out how to drop old connections nicely
